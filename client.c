@@ -38,7 +38,6 @@ int main(int argc, char const *argv[])
     serverAddress.sin_family = AF_INET;
     serverAddress.sin_port = htons(PORT);
 
-
     memcpy(&serverAddress.sin_addr,serverAddr->h_addr,serverAddr->h_length);
 
     // connect the client socket to server socket
