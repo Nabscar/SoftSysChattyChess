@@ -40,18 +40,31 @@ int main() {
     {"g1","g2","g3","g4","g5","g6","g7","g8"},
     {"h1","h2","h3","h4","h5","h6","h7","h8"},
   };
+  printf("%s", ind[0][0]);
 
-  char move[4], free[4];
+  char *piece[100], *move[100] = {0};
 
   printBoard(chess);
-  printf("Input move: ");
-  if (scanf("%s", move) == EOF) {
-    printf("Invalid move");
-    move = free;
-  };
+  printf("Input piece you would like to move: ");
+  scanf("%s", piece);
+  printf("Where would you like to move it: ");
+  scanf("%s", move);
 
   printf("%s\n", move);
 
+  if (move[4] != 0) {
+    printf("Invalid move\n");
+    for(int i = 0; i < 100; i++) {
+      move[i] = 0;
+    }
+  };
+  for(int i = 0; i < 8; i++) {
+    for(int j = 0; j < 8; i++) {
+      if (strcmp(ind[i][j], move) == 0) {
+        printf("piece found, %c", ind[i][j]);
+      }
+    }
+  }
   return 0;
 }
 
