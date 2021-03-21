@@ -15,6 +15,7 @@ Created by Oscar De La Garza & Nabih Estefan
    5 = Queen
    6 = King */
 
+char compute(char *pc, char *mv, int chess[8][8], const char *index[8][8]);
 void printBoard(int chess[8][8]);
 
 int main() {
@@ -40,33 +41,65 @@ int main() {
     {"g1","g2","g3","g4","g5","g6","g7","g8"},
     {"h1","h2","h3","h4","h5","h6","h7","h8"},
   };
-  printf("%s", ind[0][0]);
+  printf("%s\n", ind[4][3]);
 
-  char *piece[100], *move[100] = {0};
+  char piece[4], move[4];
+  char pc[3], mv[3];
 
   printBoard(chess);
+
   printf("Input piece you would like to move: ");
-  scanf("%s", piece);
+  fgets(piece, sizeof piece, stdin);
+  for(int i = 0; i < 2; i++) {
+    pc[i] = piece[i];\
+    pc[2] = '\0';
+  }
   printf("Where would you like to move it: ");
-  scanf("%s", move);
+  fgets(move, sizeof move, stdin);
+  for(int i = 0; i < 2; i++) {
+    mv[i] = move[i];
+  }
 
-  printf("%s\n", move);
-
-  if (move[4] != 0) {
-    printf("Invalid move\n");
-    for(int i = 0; i < 100; i++) {
-      move[i] = 0;
-    }
-  };
+  for(int cnt = 0; cnt < 3; cnt++) {
+    printf("pc: %c\n", pc[cnt]);
+    printf("mv: %c\n", mv[cnt]);
+  }
+/*
   for(int i = 0; i < 8; i++) {
-    for(int j = 0; j < 8; i++) {
-      if (strcmp(ind[i][j], move) == 0) {
-        printf("piece found, %c", ind[i][j]);
+    for(int j = 0; j < 8; j++) {
+      if (strcmp(ind[i][j],pc) == 0) {
+        printf("piece found, %d %d\n", (i)+1, (j)+1);
+      }
+      if (strcmp(ind[i][j],mv) == 0) {
+        printf("new spot, %d %d\n", (i)+1, (j)+1);
       }
     }
   }
+*/
+  compute(pc, mv, chess, ind);
   return 0;
 }
+
+char compute(char *pc, char *mv, int chess[8][8], const char *index[8][8]) {
+  int origRow, newRow;
+  int origCol, newCol;
+
+  for(int i = 0; i < 8; i++) {
+    for(int j = 0; j < 8; j++) {
+      if (strcmp(index[i][j],pc) == 0) {
+        origCol = i;
+        origRow = j;
+        printf("piece found, %d %d\n", (i)+1, (j)+1);
+      }
+      if (strcmp(index[i][j],mv) == 0) {
+        newCol = i;
+        newRow = j;
+        printf("new spot, %d %d\n", (i)+1, (j)+1);
+      }
+    }
+  }
+}
+
 
 void printBoard(int chess[8][8]) {
   int a,b;
@@ -86,7 +119,6 @@ void printBoard(int chess[8][8]) {
 
   printf("\n");
   len = buffer;
-  //printf("\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\n");
 
   int i;
      char alpha = 'A';
