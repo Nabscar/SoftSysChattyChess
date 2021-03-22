@@ -4,5 +4,8 @@ client: client.c
 server: server.c
 	gcc -Wall	 server.c -o server
 
+chess: chess.c
+	gcc chess.c -o chess
+
 clean:
 	rm server client
