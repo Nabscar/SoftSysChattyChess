@@ -134,9 +134,6 @@ int main()
             usernames[i][strlen(usernames[i])-1] = '\0';
             userSet[i] = 1;
             printf("%s", usernames[i]);
-            char *msg2[MAX];
-            strcat(msg2, buff);
-            send(playerSockets[i], msg2, strlen(msg2), 0);
         }
     }
 
@@ -146,12 +143,12 @@ int main()
     for (;;)
     {
         socketDesc = playerSockets[currentPlayer];
-        if (FD_ISSET(socketDesc , &readfds))
+        if ((valread = read(socketDesc , buff, MAX))!= NULL)
         {
             printf("Playing: %d\n", currentPlayer);
             //Check if it was for closing , and also read the
             //incoming message
-            if ((valread = read(socketDesc , buff, MAX)) == 0)
+            if (valread == 0)
             {
                 //Somebody disconnected , get his details and print
                 getpeername(socketDesc , (struct sockaddr*)&serverAddress, (socklen_t*)&addrLen);

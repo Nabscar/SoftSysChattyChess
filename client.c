@@ -103,7 +103,7 @@ int main(int argc, char const *argv[])
 
     while(fgets(buff, MAX, stdin) != NULL)
     {
-        printf("LOOP");
+        //printf("LOOP");
         char msg_buff[MAX] = {0};
         if (!nameFlag)
         {
@@ -111,20 +111,20 @@ int main(int argc, char const *argv[])
           username[MAX+1] = '\0';
           sprintf(msg_buff,"%s\n", username);
           nameFlag = 1;
-            printf("NAME");
+          printf("Great, lets play ");
         }
         else
         {
-          printf("PLAY");
           sprintf(msg_buff, "%s", buff);
         }
-        //inserts username at start of message
         ret = send(clientSocket , msg_buff , MAX , 0);
         if(ret < 0) {
           printf("Error sending data");
           exit(1);
         }
+        printf("%s\n", msg_buff);
         memset(buff, '0', MAX);
+        memset(msg_buff, '0', MAX);
     }
     puts("DONE!");
 
