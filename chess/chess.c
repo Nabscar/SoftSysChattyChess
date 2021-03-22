@@ -15,7 +15,7 @@ Created by Oscar De La Garza & Nabih Estefan
    5 = Queen
    6 = King */
 
-char compute(char *pc, char *mv, int chess[8][8], const char *index[8][8]);
+int compute(char *pc, char *mv, int chess[8][8], const char *index[8][8], int count);
 void printBoard(int chess[8][8]);
 
 int main() {
@@ -32,73 +32,279 @@ int main() {
   };
 
   const char *ind[8][8] = {
-    {"a1","a2","a3","a4","a5","a6","a7","a8"},
-    {"b1","b2","b3","b4","b5","b6","b7","b8"},
-    {"c1","c2","c3","c4","c5","c6","c7","c8"},
-    {"d1","d2","d3","d4","d5","d6","d7","d8"},
-    {"e1","e2","e3","e4","e5","e6","e7","e8"},
-    {"f1","f2","f3","f4","f5","f6","f7","f8"},
-    {"g1","g2","g3","g4","g5","g6","g7","g8"},
     {"h1","h2","h3","h4","h5","h6","h7","h8"},
+    {"g1","g2","g3","g4","g5","g6","g7","g8"},
+    {"f1","f2","f3","f4","f5","f6","f7","f8"},
+    {"e1","e2","e3","e4","e5","e6","e7","e8"},
+    {"d1","d2","d3","d4","d5","d6","d7","d8"},
+    {"c1","c2","c3","c4","c5","c6","c7","c8"},
+    {"b1","b2","b3","b4","b5","b6","b7","b8"},
+    {"a1","a2","a3","a4","a5","a6","a7","a8"},
   };
-  printf("%s\n", ind[4][3]);
 
   char piece[4], move[4];
   char pc[3], mv[3];
+  int checker = 1;
+  int run = 108;
 
-  printBoard(chess);
+  while(run > 0) {
+    printBoard(chess);
 
-  printf("Input piece you would like to move: ");
-  fgets(piece, sizeof piece, stdin);
-  for(int i = 0; i < 2; i++) {
-    pc[i] = piece[i];\
-    pc[2] = '\0';
-  }
-  printf("Where would you like to move it: ");
-  fgets(move, sizeof move, stdin);
-  for(int i = 0; i < 2; i++) {
-    mv[i] = move[i];
-  }
-
-  for(int cnt = 0; cnt < 3; cnt++) {
-    printf("pc: %c\n", pc[cnt]);
-    printf("mv: %c\n", mv[cnt]);
-  }
-/*
-  for(int i = 0; i < 8; i++) {
-    for(int j = 0; j < 8; j++) {
-      if (strcmp(ind[i][j],pc) == 0) {
-        printf("piece found, %d %d\n", (i)+1, (j)+1);
-      }
-      if (strcmp(ind[i][j],mv) == 0) {
-        printf("new spot, %d %d\n", (i)+1, (j)+1);
-      }
+    printf("Input piece you would like to move: ");
+    fgets(piece, sizeof piece, stdin);
+    for(int i = 0; i < 2; i++) {
+      pc[i] = piece[i];\
+      pc[2] = '\0';
     }
+    printf("Where would you like to move it: ");
+    fgets(move, sizeof move, stdin);
+    for(int i = 0; i < 2; i++) {
+      mv[i] = move[i];
+    }
+  /*
+    for(int cnt = 0; cnt < 3; cnt++) {
+      printf("pc: %c\n", pc[cnt]);
+      printf("mv: %c\n", mv[cnt]);
+    }
+  */
+    checker = compute(pc, mv, chess, ind, checker);
+    checker++;
   }
-*/
-  compute(pc, mv, chess, ind);
   return 0;
 }
 
-char compute(char *pc, char *mv, int chess[8][8], const char *index[8][8]) {
+int compute(char *pc, char *mv, int chess[8][8], const char *index[8][8], int count) {
   int origRow, newRow;
   int origCol, newCol;
 
   for(int i = 0; i < 8; i++) {
     for(int j = 0; j < 8; j++) {
       if (strcmp(index[i][j],pc) == 0) {
-        origCol = i;
-        origRow = j;
-        printf("piece found, %d %d\n", (i)+1, (j)+1);
+        origRow = i;
+        origCol = j;
+        //printf("piece found, %d %d\n", (i), (j));
+        //printf("index is: %d\n", chess[origRow][origCol]);
       }
       if (strcmp(index[i][j],mv) == 0) {
-        newCol = i;
-        newRow = j;
-        printf("new spot, %d %d\n", (i)+1, (j)+1);
+        newRow = i;
+        newCol = j;
+        //printf("new spot, %d %d\n", (i), (j));
+        //printf("index is: %d\n", chess[newRow][newCol]);
       }
     }
   }
+  if (count%2 != 0) {
+    switch (chess[origRow][origCol]) {
+      case 1:
+        if (origRow == newRow && origCol != newCol) {
+          chess[newRow][newCol] = chess[origRow][origCol];
+          chess[origRow][origCol] = 0;
+          break;
+        } else if (origCol == newCol && origRow != newRow) {
+          chess[newRow][newCol] = chess[origRow][origCol];
+          chess[origRow][origCol] = 0;
+          break;
+        } else {
+          printf("Invalid move try again.");
+          break;
+        }
+      case 2:
+        if (newRow == origRow-2 && (newCol == origCol+1 || newCol == origCol-1)) {
+          chess[newRow][newCol] = chess[origRow][origCol];
+          chess[origRow][origCol] = 0;
+          break;
+        } else if (newRow == origRow+2 && (newCol == origCol+1 || newCol == origCol-1)) {
+          chess[newRow][newCol] = chess[origRow][origCol];
+          chess[origRow][origCol] = 0;
+          break;
+        } else if (newCol == origCol+2 && (newRow == origRow+1 || newRow == origRow-1)) {
+          chess[newRow][newCol] = chess[origRow][origCol];
+          chess[origRow][origCol] = 0;
+          break;
+        } else if (newCol == origCol-2 && (newRow == origRow+1 || newRow == origRow-1)) {
+          chess[newRow][newCol] = chess[origRow][origCol];
+          chess[origRow][origCol] = 0;
+          break;
+        } else {
+          printf("Invalid move try again.");
+          break;
+        }
+      case 3:
+        if (newCol == origCol + (newRow-origRow) || newCol == origCol - (newRow-origRow)) {
+          chess[newRow][newCol] = chess[origRow][origCol];
+          chess[origRow][origCol] = 0;
+          break;
+        } else {
+          printf("Invalid move try again.");
+          break;
+        }
+      case 4:
+        if (origRow == newRow && (newCol = origCol+1 || newCol == origCol-1)) {
+          chess[newRow][newCol] = chess[origRow][origCol];
+          chess[origRow][origCol] = 0;
+          break;
+        } else if (origCol == newCol && (newRow = origRow+1 || newRow == origRow-1)) {
+          chess[newRow][newCol] = chess[origRow][origCol];
+          chess[origRow][origCol] = 0;
+          break;
+        } else if ((newCol == origCol + 1 || newCol == origCol -1) && (newRow == origRow+1 || newRow == origRow-1)) {
+          chess[newRow][newCol] = chess[origRow][origCol];
+          chess[origRow][origCol] = 0;
+          break;
+        } else {
+          printf("Invalid move try again.");
+          break;
+        }
+      case 5:
+        if (origRow == newRow && origCol != newCol) {
+          chess[newRow][newCol] = chess[origRow][origCol];
+          chess[origRow][origCol] = 0;
+          break;
+        } else if (origCol == newCol && origRow != newRow) {
+          chess[newRow][newCol] = chess[origRow][origCol];
+          chess[origRow][origCol] = 0;
+          break;
+        } else if (newCol == origCol + (newRow-origRow) || newCol == origCol - (newRow-origRow)) {
+          chess[newRow][newCol] = chess[origRow][origCol];
+          chess[origRow][origCol] = 0;
+          break;
+        } else {
+          printf("Invalid move try again.");
+          break;
+        }
+      case 6:
+        if ((newCol == origCol+1 || newCol == origCol-1) && newRow == origRow-1) {
+          chess[newRow][newCol] = chess[origRow][origCol];
+          chess[origRow][origCol] = 0;
+          break;
+        } else if (origRow-1 == newRow || origRow-2 == newRow) {
+          if (chess[origRow-1][origCol] != 0 && newRow == origRow-1) {
+            printf("Invalid move, piece in front.");
+            break;
+          } else if (chess[origRow-2][origCol] != 0 && newRow == origRow-2) {
+            printf("Invalid move, piece already there.");
+            break;
+          } else if (origCol != newCol) {
+            printf("Invalid move try again");
+          } else {
+          chess[newRow][newCol] = chess[origRow][origCol];
+          chess[origRow][origCol] = 0;
+          break;
+          }
+        }
+    default:
+      printf("WHITE: make a valid move");
+      count--;
+    }
+  }
+  if (count%2 == 0) {
+    switch (chess[origRow][origCol]) {
+      case -1:
+        if (origRow == newRow && origCol != newCol) {
+          chess[newRow][newCol] = chess[origRow][origCol];
+          chess[origRow][origCol] = 0;
+          break;
+        } else if (origCol == newCol && origRow != newRow) {
+          chess[newRow][newCol] = chess[origRow][origCol];
+          chess[origRow][origCol] = 0;
+          break;
+        } else {
+          printf("Invalid move try again.");
+          break;
+        }
+      case -2:
+        if (newRow == origRow-2 && (newCol == origCol+1 || newCol == origCol-1)) {
+          chess[newRow][newCol] = chess[origRow][origCol];
+          chess[origRow][origCol] = 0;
+          break;
+        } else if (newRow == origRow+2 && (newCol == origCol+1 || newCol == origCol-1)) {
+          chess[newRow][newCol] = chess[origRow][origCol];
+          chess[origRow][origCol] = 0;
+          break;
+        } else if (newCol == origCol+2 && (newRow == origRow+1 || newRow == origRow-1)) {
+          chess[newRow][newCol] = chess[origRow][origCol];
+          chess[origRow][origCol] = 0;
+          break;
+        } else if (newCol == origCol-2 && (newRow == origRow+1 || newRow == origRow-1)) {
+          chess[newRow][newCol] = chess[origRow][origCol];
+          chess[origRow][origCol] = 0;
+          break;
+        } else {
+          printf("Invalid move try again.");
+          break;
+        }
+      case -3:
+        if (newCol == origCol + (newRow-origRow) || newCol == origCol - (newRow-origRow)) {
+          chess[newRow][newCol] = chess[origRow][origCol];
+          chess[origRow][origCol] = 0;
+          break;
+        } else {
+          printf("Invalid move try again.");
+          break;
+        }
+      case -4:
+        if (origRow == newRow && (newCol = origCol+1 || newCol == origCol-1)) {
+          chess[newRow][newCol] = chess[origRow][origCol];
+          chess[origRow][origCol] = 0;
+          break;
+        } else if (origCol == newCol && (newRow = origRow+1 || newRow == origRow-1)) {
+          chess[newRow][newCol] = chess[origRow][origCol];
+          chess[origRow][origCol] = 0;
+          break;
+        } else if ((newCol == origCol + 1 || newCol == origCol -1) && (newRow == origRow+1 || newRow == origRow-1)) {
+          chess[newRow][newCol] = chess[origRow][origCol];
+          chess[origRow][origCol] = 0;
+          break;
+        } else {
+          printf("Invalid move try again.");
+          break;
+        }
+      case -5:
+        if (origRow == newRow && origCol != newCol) {
+          chess[newRow][newCol] = chess[origRow][origCol];
+          chess[origRow][origCol] = 0;
+          break;
+        } else if (origCol == newCol && origRow != newRow) {
+          chess[newRow][newCol] = chess[origRow][origCol];
+          chess[origRow][origCol] = 0;
+          break;
+        } else if (newCol == origCol + (newRow-origRow) || newCol == origCol - (newRow-origRow)) {
+          chess[newRow][newCol] = chess[origRow][origCol];
+          chess[origRow][origCol] = 0;
+          break;
+        } else {
+          printf("Invalid move try again.");
+          break;
+        }
+      case -6:
+        if ((newCol == origCol+1 || newCol == origCol-1) && newRow == origRow+1) {
+          chess[newRow][newCol] = chess[origRow][origCol];
+          chess[origRow][origCol] = 0;
+          break;
+        } else if (origRow+1 == newRow || origRow+2 == newRow) {
+          if (chess[origRow+1][origCol] != 0 && newRow == origRow+1) {
+            printf("Invalid move, piece 1 away.");
+            break;
+          } else if (chess[origRow+2][origCol] != 0 && newRow == origRow+2) {
+            printf("Invalid move, piece 2 away.");
+            break;
+          } else if (origCol != newCol) {
+              printf("Invalid move try again");
+              break;
+          } else {
+          chess[newRow][newCol] = chess[origRow][origCol];
+          chess[origRow][origCol] = 0;
+          break;
+          }
+        }
+      default:
+        printf("BLACK: make a valid move");
+        count--;
+    }
+  }
+  return count;
 }
+
 
 
 void printBoard(int chess[8][8]) {
@@ -121,7 +327,7 @@ void printBoard(int chess[8][8]) {
   len = buffer;
 
   int i;
-     char alpha = 'A';
+     char alpha = 'H';
      int vert = 0;
      for(brd; brd>0; brd--)
      {
@@ -166,7 +372,7 @@ void printBoard(int chess[8][8]) {
                      //printf("\u2588\u2588\u258C\x1b[37m%d\x1b[0m\u2590\u2588\u2588\n", chess[0][2]);
                      //printf("\u2588\u2588\u258C\x1b[42m\x1b[30m%d\x1b[0m\u2590\u2588\u2588\n", chess[0][2]);
                      {
-                      printf("   \x1b[37m%d\x1b[0m   ", (chess[a][b])*-1);
+                      printf("   \x1b[32m%d\x1b[0m   ", (chess[a][b])*-1);
                      }
 
                      if(chess[a][b] == 0)
@@ -176,7 +382,7 @@ void printBoard(int chess[8][8]) {
 
                      if(chess[a][b] > 0)
                      {
-                      printf("   \x1b[32m%d\x1b[0m   ", chess[a][b]);
+                      printf("   \x1b[37m%d\x1b[0m   ", chess[a][b]);
                      }
                  }
 
@@ -184,12 +390,12 @@ void printBoard(int chess[8][8]) {
                  {
                      if(chess[a][b] < 0)
                      {
-                      printf("\u2588\u2588\u258C\x1b[37m%d\x1b[0m\u2590\u2588\u2588", (chess[a][b])*-1);
+                      printf("\u2588\u2588\u258C\x1b[32m%d\x1b[0m\u2590\u2588\u2588", (chess[a][b])*-1);
                      }
 
                      {
                        if(chess[a][b] > 0)
-                      printf("\u2588\u2588\u258C\x1b[32m%d\x1b[0m\u2590\u2588\u2588", chess[a][b]);
+                      printf("\u2588\u2588\u258C\x1b[37m%d\x1b[0m\u2590\u2588\u2588", chess[a][b]);
                      }
 
                      if(chess[a][b] == 0)
@@ -233,7 +439,7 @@ void printBoard(int chess[8][8]) {
             i--;
         }
 
-         alpha++;
+         alpha--;
          vert++;
     }
 
