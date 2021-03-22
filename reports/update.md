@@ -1,4 +1,4 @@
-Chatty Chess
+## Chatty Chess Through two terminals
 ### Nabih Estefan & Oscar De La Garza
 
 
@@ -16,3 +16,6 @@ Currently Nabih has taken lead on achieving the server-based client chatroom.Thi
 - Finalize the Server client. This is very close to being done. We currently are able to send communications to another client through the server but need to works out some bugs and assure we can connect between two different computers on the same wifi. This is something we can determine as accomplished once we can connect to a server by using both of our laptops and communicate - Nabih / Oscar
 - Finalize the Chess Game. Currently the chess game is taking an input from the user for the moves and printing the full board with all the pieces being identifiable. For full implementation the main part missing a computation function to determine if a move is valid and then one to update the board. For this to be complete we would be looking for a person off of one laptop to be able to play Chess. - Oscar / Nabih
 - Implement combined server application with a chess game. With both other tasks being completed we would like to then achieve this task through what we expect will be quite a bit of debugging since we wish for the serve to print the new board only to the corresponding players whose turn it is. This will be measured as complete once we have two computers being able to log onto a server through their terminal and play each other in a chess game. - Nabih & Oscar
+
+Trello: https://trello.com/b/tMI9xxLl/chattychess
+GitHub Repo: https://github.com/Nabscar/SoftSysChattyChess/

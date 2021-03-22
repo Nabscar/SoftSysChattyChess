@@ -1,39 +1,55 @@
 #include <stdio.h>
+#include <string.h>   //strlen
 #include <stdlib.h>
-#include <string.h>
 #include <errno.h>
-#include <netdb.h>
-
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
+#include <arpa/inet.h>    //close
+#include <sys/time.h> //FD_SET, FD_ISSET, FD_ZERO macros
 #include <sys/types.h>
-#include <sys/time.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <unistd.h>
+#include <wchar.h>
+#include <locale.h>
 
 #define TRUE 1
 #define FALSE 0
 #define MAX 80
-#define PORT 8080
-#define SA struct sockaddr
+#define PORT 9000
+#define PLAYERS 2
 
-// Function designed for chat between client and server.
-int communicationFunction(int masterSocket, int clientConnect);
 // Driver function
 int main()
 {
-    int masterSocket, clientConnect, serverAddressLen;
-    struct sockaddr_in serverAddress, clientAddress;
+    int opt = TRUE; //for multiple connections
+    int masterSocket, playerSockets[PLAYERS], socketDesc, masterSocketDesc,
+      activity, newSocket, valread, addrLen;
+    struct sockaddr_in serverAddress;
+    char usernames[PLAYERS][MAX];
+    int userSet[PLAYERS] = {0};
+    char buff[MAX];
+
+    //set of socket descriptors
+    fd_set readfds;
+
+    playerSockets[0] = 0;
+    playerSockets[1] = 0;
 
     // socket create and verification
-    if ( (masterSocket  = socket(AF_INET, SOCK_STREAM, 0)) == 0)
+    if ((masterSocket = socket(AF_INET, SOCK_STREAM, 0)) == 0)
     {
-        printf("socket creation failed...\n");
+        printf("Socket Creation Failed\n");
         exit(EXIT_FAILURE);
     }
-    else
-      printf("Socket successfully created..\n");
+    // else
+    //   printf("Socket successfully created!\n");
 
-    memset((char*)&serverAddress, 0, sizeof(serverAddress));
+    // Set master socket for multiple connections
+    if(setsockopt(masterSocket, SOL_SOCKET, SO_REUSEADDR, (char *)&opt,
+          sizeof(opt)) < 0)
+    {
+        perror("Set Sock Opt");
+        exit(EXIT_FAILURE);
+    }
 
     // assign IP, PORT
     serverAddress.sin_family = AF_INET;
@@ -41,81 +57,137 @@ int main()
     serverAddress.sin_port = htons(PORT);
 
     // Binding newly created socket to given IP and verification
-    if ((bind(masterSocket, (SA*)&serverAddress, sizeof(serverAddress))) != 0)
+    if (bind(masterSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0)
     {
-        printf("socket bind failed...\n");
+        printf("Socket Bind Failed\n");
         exit(EXIT_FAILURE);
     }
-    else
-      printf("Socket successfully binded: <%u>\n", masterSocket);
+    // else
+    // {
+    //   printf("Socket successfully binded: <%u>\n", masterSocket);
+    printf("Listening on Port %d\n", PORT);
+    // }
 
-    for(;;)
+    if (listen(masterSocket, 2) < 0)
     {
-      // Now server is ready to listen and verification
-      if ((listen(masterSocket, 2)) != 0)
-      {
-          printf("Listen failed...\n");
-          exit(EXIT_FAILURE);
-      }
-      else
-          printf("Server listening..\n");
-
-      serverAddressLen = sizeof(serverAddress);
-
-      // Accept the data packet from client and verification
-      clientConnect = accept(masterSocket, (SA*)&serverAddress,
-        &serverAddressLen);
-      if (clientConnect < 0)
-      {
-          printf("server accept failed...\n");
-          exit(EXIT_FAILURE);
-      }
-      else
-          printf("server accept the client...\n");
-
-      // Function for chatting between client and server
-      if (communicationFunction(clientConnect, clientConnect) == 0)
-      {
-        // if server closed then close completely
-        close(masterSocket, clientConnect);
-        return 0;
-      }
-      // if client closed go back to listening
+        perror("Listening...");
+        exit(EXIT_FAILURE);
     }
-}
 
+    addrLen = sizeof(serverAddress);
+    puts("Server Started!");
+    // PLayer Setup Loop
+    for(int i = 0; i < PLAYERS; i++)
+    {
+        FD_ZERO(&readfds);
+        FD_SET(masterSocket, &readfds);
+        masterSocketDesc = masterSocket;
 
-int communicationFunction(int masterSocket, int clientConnect)
-{
-    char buff[MAX];
-    int n;
-    // infinite loop for chat
+        for (int i = 0; i < PLAYERS; i++)
+        {
+            socketDesc = playerSockets[1];
+            if (socketDesc > 0)
+            {
+                FD_SET(socketDesc, &readfds);
+            }
+            if (socketDesc > masterSocketDesc)
+            {
+                masterSocketDesc = socketDesc;
+            }
+        }
+
+        activity = select(masterSocketDesc+1 , &readfds , NULL , NULL , NULL);
+
+        if ((activity < 0) && (errno!=EINTR))
+        {
+            printf("Select Error");
+        }
+
+        // New connection
+        if (FD_ISSET(masterSocket, &readfds))
+        {
+            if ((newSocket = accept(masterSocket, (struct sockaddr*)&serverAddress, \
+            (socklen_t*)&addrLen)) < 0)
+            {
+                perror("Error connecting to user");
+                exit(EXIT_FAILURE);
+            }
+
+            //inform user of socket number - used in send and receive commands
+            printf("New connection! Socket fd: %d, IP: %s , Port: %d\n" , \
+              newSocket , inet_ntoa(serverAddress.sin_addr) , \
+              ntohs(serverAddress.sin_port));
+
+            //send new connection greeting message
+            char* msg1 = "Hello! Please enter your name: \r\n";
+            if(send(newSocket, msg1, strlen(msg1), 0) != strlen(msg1))
+            {
+                printf("Error sending Message");
+            }
+
+            puts("Welcome message sent successfully");
+
+            playerSockets[i] = newSocket;
+
+            read(newSocket , buff, MAX);
+            strcpy(usernames[i], buff);
+            usernames[i][strlen(usernames[i])-1] = '\0';
+            userSet[i] = 1;
+            printf("%s", usernames[i]);
+            char *msg2[MAX];
+            strcat(msg2, buff);
+            send(playerSockets[i], msg2, strlen(msg2), 0);
+        }
+    }
+
+    // infinite game loop
+    int currentPlayer = 0;
+    puts("Players connected! Lets Play!");
     for (;;)
     {
-        bzero(buff, MAX);
-
-        // read the message from client and copy it in buffer
-        read(clientConnect, buff, MAX);
-        // print buffer which contains the client contents
-        printf("From client: %s\t To client : ", buff);
-        if (strncmp("exit", buff, 4) == 0)
+        socketDesc = playerSockets[currentPlayer];
+        if (FD_ISSET(socketDesc , &readfds))
         {
-            printf("Client exited...\n");
-            return 1;
-        }
-        bzero(buff, MAX);
-        n = 0;
-        // copy server message in the buffer
-        while ((buff[n++] = getchar()) != '\n');
+            printf("Playing: %d\n", currentPlayer);
+            //Check if it was for closing , and also read the
+            //incoming message
+            if ((valread = read(socketDesc , buff, MAX)) == 0)
+            {
+                //Somebody disconnected , get his details and print
+                getpeername(socketDesc , (struct sockaddr*)&serverAddress, (socklen_t*)&addrLen);
+                printf("Host Disconnected. IP: %s. Port %d \n" , \
+                inet_ntoa(serverAddress.sin_addr),
+                ntohs(serverAddress.sin_port));
 
-        // and send that buffer to client
-        write(clientConnect, buff, MAX);
+                char* message_quit = "User Disconnected. You Win!\n";
 
-        // if msg contains "Exit" then server exit and chat ended.
-        if (strncmp("exit", buff, 4) == 0)
-        {
-            printf("Server Exit...\n");
-            return 0;
+                socketDesc = playerSockets[(currentPlayer+1)%2];
+                send(socketDesc,message_quit,strlen(message_quit),0);
+                exit(0);
+            }
+            else
+            {
+                printf("%s\n", buff);
+                buff[valread] = '\0';
+                if (userSet[currentPlayer]==0)
+                { //assumes first message from client is username
+                    char *nameStart = strchr(buff, ':'); //records username
+                    strcpy(usernames[currentPlayer], nameStart + 2);
+                    usernames[currentPlayer][strlen(usernames[currentPlayer])-1] = '\0';
+                    userSet[currentPlayer] = 1;
+                    char *msg2 = "Great! Now we can start the game!\r\n";
+                    send(playerSockets[currentPlayer], msg2, strlen(msg2), 0);
+                }
+                else if(userSet[currentPlayer]==1)
+                { // Now we can play
+                    socketDesc = playerSockets[(currentPlayer+1)%2];
+                    // Read buffer message and do the chess shit here
+                    //gonna have just sending message to the other user for Now
+                    send(socketDesc, buff, strlen(buff), 0);
+                }
+                currentPlayer = (currentPlayer + 1) % 2;
+            }
         }
     }
+    return 0;
 }
