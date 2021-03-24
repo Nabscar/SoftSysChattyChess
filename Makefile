@@ -1,11 +1,14 @@
-client: client.c
-	gcc -Wall client.c -o client -pthread
+client: client.c chessFunc.o chess.h server.h
+	gcc client.c chessFunc.o -o client -pthread
 
-server: server.c
-	gcc -Wall	 server.c -o server
+server: server.c chessFunc.o chess.h server.h
+	gcc server.c chessFunc.o -o server
 
-chess: chess.c
-	gcc chess.c -o chess
+chess: chess.c chessFunc.o chess.h
+	gcc chess.c chessFunc.o -o chess
+
+chessFunc.o: chessFunc.c chess.h
+	gcc -c chessFunc.c
 
 clean:
-	rm server client
+	rm server client chess
