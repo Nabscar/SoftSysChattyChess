@@ -4,18 +4,18 @@ Created by Oscar De La Garza & Nabih Estefan
 */
 #include "chess.h"
 int compute(char *pc, char *mv, int chess[8][8], const char *index[8][8], int count) {
-  int origRow, newRow;
-  int origCol, newCol;
+  int origRow, newRow;    // row variables
+  int origCol, newCol;    // column variables
 
-  for(int i = 0; i < 8; i++) {
+  for(int i = 0; i < 8; i++) {      // find index of piece to be moved
     for(int j = 0; j < 8; j++) {
-      if (strcmp(index[i][j],pc) == 0) {
+      if (strcmp(index[i][j],pc) == 0) {  // check for piece(origianl location)
         origRow = i;
         origCol = j;
         //printf("piece found, %d %d\n", (i), (j));
         //printf("index is: %d\n", chess[origRow][origCol]);
       }
-      if (strcmp(index[i][j],mv) == 0) {
+      if (strcmp(index[i][j],mv) == 0) { // check for move(desired location)
         newRow = i;
         newCol = j;
         //printf("new spot, %d %d\n", (i), (j));
@@ -25,94 +25,82 @@ int compute(char *pc, char *mv, int chess[8][8], const char *index[8][8], int co
   }
 
   /******** WHITE'S TURN ********/
-  if (count%2 != 0) {
-    switch (chess[origRow][origCol]) {
+  if (count%2 != 0) {                   // odd = white's turn
+    switch (chess[origRow][origCol]) {  // check original piece for rulecheck
 
         /******** ROOK RULECHECK ********/
       case 1:
-        if (chess[newRow][newCol] > 0) {
+        if (chess[newRow][newCol] > 0) {  // is your piecce blocking you
           printf("Your piece occupies that spot.\n\n");
           count --;
           return count;
-        } else if (origRow == newRow && origCol != newCol) {
+        } else if (origRow == newRow && origCol != newCol) { // lateral mvmt.
           if (newCol > origCol) {
-            for (int i = origCol; i < newCol; i++) {
-              if (chess[origRow][origCol] != 0) {
+            for (int i = origCol+1; i < newCol; i++) { // left -> right
+              if (chess[origRow][i] != 0) { // does a piece block you
                 printf("A piece blocks your way.\n");
                 count--;
                 return count;
               }
             }
           } else {
-            for (int i = origCol; i > newCol; i--) {
-              if (chess[origRow][origCol] != 0) {
+            for (int i = origCol-1; i > newCol; i--) { // right -> left
+              if (chess[origRow][i] != 0) { // does a piece block you
                 printf("A piece blocks your way.\n");
                 count--;
                 return count;
               }
             }
+            break;
           }
-          chess[newRow][newCol] = chess[origRow][origCol];
-          chess[origRow][origCol] = 0;
-          break;
-        } else if (origCol == newCol && origRow != newRow) {
+        } else if (origCol == newCol && origRow != newRow) { // vertical mvmt.
           if (newRow > origRow) {
-            for (int i = origRow; i < newRow; i++) {
-              if (chess[origRow][origCol] != 0) {
+            for (int i = origRow+1; i < newRow; i++) {  // downwards
+              if (chess[i][origCol] != 0) { // does a piece block you
                 printf("A piece blocks your way.\n");
                 count --;
                 return count;
               }
             }
           } else {
-            for (int i = origRow; i > newRow; i--) {
-              if (chess[origRow][origCol] != 0) {
+            for (int i = origRow-1; i > newRow; i--) { // upwards
+              if (chess[i][origCol] != 0) { // does a piece block you
                 printf("A piece blocks your way.\n");
                 count--;
                 return count;
               }
             }
+            break;
           }
-          chess[newRow][newCol] = chess[origRow][origCol];
-          chess[origRow][origCol] = 0;
-          break;
         } else {
-          printf("Invalid move try again.\n");
+          printf("Invalid move try again.\n"); // Invalid for some reason
           count --;
           return count;
         }
 
         /******** KNIGHT RULECHECK ********/
       case 2:
-        if (chess[newRow][newCol] > 0) {
+        if (chess[newRow][newCol] > 0) {  // is your piecce blocking you
           printf("Your piece occupies that spot.\n\n");
           count --;
           return count;
         } else if (newRow == origRow-2 && (newCol == origCol+1 || newCol == origCol-1)) {
-          chess[newRow][newCol] = chess[origRow][origCol];
-          chess[origRow][origCol] = 0;
-          break;
+            break;
         } else if (newRow == origRow+2 && (newCol == origCol+1 || newCol == origCol-1)) {
-          chess[newRow][newCol] = chess[origRow][origCol];
-          chess[origRow][origCol] = 0;
-          break;
+            break;
         } else if (newCol == origCol+2 && (newRow == origRow+1 || newRow == origRow-1)) {
-          chess[newRow][newCol] = chess[origRow][origCol];
-          chess[origRow][origCol] = 0;
-          break;
+            break;
         } else if (newCol == origCol-2 && (newRow == origRow+1 || newRow == origRow-1)) {
-          chess[newRow][newCol] = chess[origRow][origCol];
-          chess[origRow][origCol] = 0;
-          break;
+            break;
         } else {
-          printf("Invalid move try again.\n");
+          printf("Invalid move try again.\n"); // Invalid for some reason
           count --;
           return count;
         }
 
         /******** BISHOP RULECHECK ********/
       case 3:
-        if (chess[newRow][newCol] > 0) {
+        if (chess[newRow][newCol] > 0) {  // is your piecce blocking you
           printf("Your piece occupies that spot.\n\n");
           count --;
           return count;
@@ -154,87 +142,85 @@ int compute(char *pc, char *mv, int chess[8][8], const char *index[8][8], int co
               }
             }
           }
-          chess[newRow][newCol] = chess[origRow][origCol];
-          chess[origRow][origCol] = 0;
           break;
         } else {
-          printf("Invalid move try again.\n");
+          printf("Invalid move try again.\n"); // Invalid for some reason
           count --;
           return count;
         }
 
         /******** KING RULECHECK ********/
       case 4:
-        if (chess[newRow][newCol] > 0) {
+        if (chess[newRow][newCol] > 0) {  // is your piecce blocking you
           printf("Your piece occupies that spot.\n\n");
           count --;
           return count;
-        } else if (origRow == newRow && (newCol = origCol+1 || newCol == origCol-1)) {
-          chess[newRow][newCol] = chess[origRow][origCol];
-          chess[origRow][origCol] = 0;
-          break;
-        } else if (origCol == newCol && (newRow = origRow+1 || newRow == origRow-1)) {
-          chess[newRow][newCol] = chess[origRow][origCol];
-          chess[origRow][origCol] = 0;
-          break;
-        } else if ((newCol == origCol + 1 || newCol == origCol -1) && (newRow == origRow+1 || newRow == origRow-1)) {
-          chess[newRow][newCol] = chess[origRow][origCol];
-          chess[origRow][origCol] = 0;
-          break;
+        } else if (origRow == 7 && newRow < 7) {
+          if (origRow == newRow && (newCol == origCol+1 || newCol == origCol-1)) {
+            break;
+          } else if (origCol == newCol && newRow == origRow-1) {
+              break;
+          } else if ((newCol == origCol + 1 || newCol == origCol -1) && newRow == origRow-1) {
+              break;
+          }
         } else {
-          printf("Invalid move try again.\n");
-          count --;
-          return count;
+            if (origRow == newRow && (newCol == origCol+1 || newCol == origCol-1)) {
+              break;
+          } else if (origCol == newCol && (newRow == origRow+1 || newRow == origRow-1)) {
+              break;
+          } else if ((newCol == origCol + 1 || newCol == origCol -1) && (newRow == origRow+1 || newRow == origRow-1)) {
+              break;
+          } else {
+            printf("Invalid move try again.\n"); // Invalid for some reason
+            count --;
+            return count;
+          }
         }
 
         /******** QUEEN RULECHECK ********/
       case 5:
-        if (chess[newRow][newCol] > 0) {
+        if (chess[newRow][newCol] > 0) {  // is your piecce blocking you
           printf("Your piece occupies that spot.\n\n");
           count --;
           return count;
-        } else if (origRow == newRow && origCol != newCol) {
+        } else if (origRow == newRow && origCol != newCol) { // lateral mvmt.
           if (newCol > origCol) {
-            for (int i = origCol; i < newCol; i++) {
-              if (chess[origRow][origCol] != 0) {
+            for (int i = origCol+1; i < newCol; i++) { // left -> right
+              if (chess[origRow][i] != 0) { // does a piece block you
                 printf("A piece blocks your way.\n");
                 count--;
                 return count;
               }
             }
           } else {
-            for (int i = origCol; i > newCol; i--) {
-              if (chess[origRow][origCol] != 0) {
+            for (int i = origCol-1; i > newCol; i--) { // right -> left
+              if (chess[origRow][i] != 0) { // does a piece block you
                 printf("A piece blocks your way.\n");
                 count--;
                 return count;
               }
             }
+            break;
           }
-          chess[newRow][newCol] = chess[origRow][origCol];
-          chess[origRow][origCol] = 0;
-          break;
-        } else if (origCol == newCol && origRow != newRow) {
+        } else if (origCol == newCol && origRow != newRow) { // vertical mvmt.
           if (newRow > origRow) {
-            for (int i = origRow; i < newRow; i++) {
-              if (chess[origRow][origCol] != 0) {
+            for (int i = origRow+1; i < newRow; i++) {  // downwards
+              if (chess[i][origCol] != 0) { // does a piece block you
                 printf("A piece blocks your way.\n");
                 count --;
                 return count;
               }
             }
           } else {
-            for (int i = origRow; i > newRow; i--) {
-              if (chess[origRow][origCol] != 0) {
+            for (int i = origRow-1; i > newRow; i--) { // upwards
+              if (chess[i][origCol] != 0) { // does a piece block you
                 printf("A piece blocks your way.\n");
                 count--;
                 return count;
               }
             }
+            break;
           }
-          chess[newRow][newCol] = chess[origRow][origCol];
-          chess[origRow][origCol] = 0;
-          break;
         } else if (newCol == origCol + (newRow-origRow) || newCol == origCol - (newRow-origRow)) {
           if (origRow > newRow) {
             if (origCol > newCol) {
@@ -273,11 +259,9 @@ int compute(char *pc, char *mv, int chess[8][8], const char *index[8][8], int co
               }
             }
           }
-          chess[newRow][newCol] = chess[origRow][origCol];
-          chess[origRow][origCol] = 0;
           break;
         } else {
-          printf("Invalid move try again.\n");
+          printf("Invalid move try again.\n"); // Invalid for some reason
           count --;
           return count;
         }
@@ -288,36 +272,27 @@ int compute(char *pc, char *mv, int chess[8][8], const char *index[8][8], int co
           printf("Your piece occupies that spot.\n\n");
           count --;
           return count;
-        } else if ((newCol == origCol+1 || newCol == origCol-1) && newRow == origRow-1) {
-          chess[newRow][newCol] = chess[origRow][origCol];
-          chess[origRow][origCol] = 0;
-          break;
-        } else if (origRow-1 == newRow || origRow-2 == newRow) {
-          if (chess[origRow-1][origCol] != 0 && newRow == origRow-1) {
-            printf("Invalid move, piece in front.\n");
-            count --;
-            return count;
-          } else if (chess[origRow-2][origCol] != 0 && newRow == origRow-2) {
-            printf("Invalid move, piece already there.\n");
-            count --;
-            return count;
-          } else if (origCol != newCol) {
-            printf("Invalid move try again.\n");
-            count --;
-            return count;
-          } else {
-          chess[newRow][newCol] = chess[origRow][origCol];
-          chess[origRow][origCol] = 0;
-          break;
-          }
+        } else if ((newCol == origCol+1 || newCol == origCol-1) && newRow == origRow-1 && chess[newRow][newCol] < 0) { // capturing
+            break;
+        } else if (origRow == 6 && newCol == origCol && (newRow == origRow-1 || newRow == origRow-2)) { // initial move
+            break;
+        } else if (newRow == origRow-1 && newCol == origCol) { // move foward 1
+            break;
+        } else {
+          printf("Invalid move try again.\n"); // Invalid for some reason
+          count --;
+          return count;
         }
 
     default:
-      printf("WHITE: make a valid move\n");
+      printf("WHITE: make a valid move\n");  // No valid move detected
       count--;
-      printf("Count after WHITE: %d\n", count);
+      // printf("Count after WHITE: %d\n", count);
       return count;
     }
+    chess[newRow][newCol] = chess[origRow][origCol];  // update piece
+    chess[origRow][origCol] = 0;      // empty original position
+    return count;
   }
 
   /******** BLACK'S TURN ********/
@@ -326,54 +301,50 @@ int compute(char *pc, char *mv, int chess[8][8], const char *index[8][8], int co
 
         /******** ROOK RULECHECK ********/
       case -1:
-        if (chess[newRow][newCol] > 0) {
+        if (chess[newRow][newCol] > 0) {  // is your piecce blocking you
           printf("Your piece occupies that spot.\n\n");
           count --;
           return count;
-        } else if (origRow == newRow && origCol != newCol) {
+        } else if (origRow == newRow && origCol != newCol) { // lateral mvmt.
           if (newCol > origCol) {
-            for (int i = origCol; i < newCol; i++) {
-              if (chess[origRow][origCol] != 0) {
+            for (int i = origCol+1; i < newCol; i++) { // left -> right
+              if (chess[origRow][i] != 0) { // does a piece block you
                 printf("A piece blocks your way.\n");
                 count--;
                 return count;
               }
             }
           } else {
-            for (int i = origCol; i > newCol; i--) {
-              if (chess[origRow][origCol] != 0) {
+            for (int i = origCol-1; i > newCol; i--) { // right -> left
+              if (chess[origRow][i] != 0) { // does a piece block you
                 printf("A piece blocks your way.\n");
                 count--;
                 return count;
               }
             }
+            break;
           }
-          chess[newRow][newCol] = chess[origRow][origCol];
-          chess[origRow][origCol] = 0;
-          break;
-        } else if (origCol == newCol && origRow != newRow) {
+        } else if (origCol == newCol && origRow != newRow) { // vertical mvmt.
           if (newRow > origRow) {
-            for (int i = origRow; i < newRow; i++) {
-              if (chess[origRow][origCol] != 0) {
+            for (int i = origRow+1; i < newRow; i++) {  // downwards
+              if (chess[i][origCol] != 0) { // does a piece block you
                 printf("A piece blocks your way.\n");
-                count--;
+                count --;
                 return count;
               }
             }
           } else {
-            for (int i = origRow; i > newRow; i--) {
-              if (chess[origRow][origCol] != 0) {
+            for (int i = origRow-1; i > newRow; i--) { // upwards
+              if (chess[i][origCol] != 0) { // does a piece block you
                 printf("A piece blocks your way.\n");
                 count--;
                 return count;
               }
             }
+            break;
           }
-          chess[newRow][newCol] = chess[origRow][origCol];
-          chess[origRow][origCol] = 0;
-          break;
         } else {
-          printf("Invalid move try again.\n");
+          printf("Invalid move try again.\n"); // Invalid for some reason
           count --;
           return count;
         }
@@ -385,21 +356,13 @@ int compute(char *pc, char *mv, int chess[8][8], const char *index[8][8], int co
           count --;
           return count;
         } else if (newRow == origRow-2 && (newCol == origCol+1 || newCol == origCol-1)) {
-          chess[newRow][newCol] = chess[origRow][origCol];
-          chess[origRow][origCol] = 0;
-          break;
+            break;
         } else if (newRow == origRow+2 && (newCol == origCol+1 || newCol == origCol-1)) {
-          chess[newRow][newCol] = chess[origRow][origCol];
-          chess[origRow][origCol] = 0;
-          break;
+            break;
         } else if (newCol == origCol+2 && (newRow == origRow+1 || newRow == origRow-1)) {
-          chess[newRow][newCol] = chess[origRow][origCol];
-          chess[origRow][origCol] = 0;
-          break;
+            break;
         } else if (newCol == origCol-2 && (newRow == origRow+1 || newRow == origRow-1)) {
-          chess[newRow][newCol] = chess[origRow][origCol];
-          chess[origRow][origCol] = 0;
-          break;
+            break;
         } else {
           printf("Invalid move try again.\n");
           count --;
@@ -439,84 +402,12 @@ int compute(char *pc, char *mv, int chess[8][8], const char *index[8][8], int co
                 count--;
                 return count;
               }
-            }
-          } else {
-            for (int i = 1; i < (newCol - origCol); i++) {    /*** DOWN RIGHT DIAG ***/
-              if (chess[origRow+i][origCol+i] !=0) {
-                printf("A piece blocks your way.\n");
-                count--;
-                return count;
-              }
-            }
-          }
-        }
-        chess[newRow][newCol] = chess[origRow][origCol];
-        chess[origRow][origCol] = 0;
-        break;
-      } else {
-        printf("Invalid move try again.\n");
-        count --;
-        return count;
-      }
-
-        /******** KING RULECHECK ********/
-      case -4:
-        if (chess[newRow][newCol] < 0) {
-          printf("Your piece occupies that spot.\n\n");
-          count --;
-          return count;
-        } else if (origRow == newRow && (newCol = origCol+1 || newCol == origCol-1)) {
-          chess[newRow][newCol] = chess[origRow][origCol];
-          chess[origRow][origCol] = 0;
-          break;
-        } else if (origCol == newCol && (newRow = origRow+1 || newRow == origRow-1)) {
-          chess[newRow][newCol] = chess[origRow][origCol];
-          chess[origRow][origCol] = 0;
-          break;
-        } else if ((newCol == origCol + 1 || newCol == origCol -1) && (newRow == origRow+1 || newRow == origRow-1)) {
-          chess[newRow][newCol] = chess[origRow][origCol];
-          chess[origRow][origCol] = 0;
-          break;
-        } else {
-          printf("Invalid move try again.\n");
-          count --;
-          return count;
-        }
-
-        /******** QUEEN RULECHECK ********/
-      case -5:
-        if (chess[newRow][newCol] < 0) {
-          printf("Your piece occupies that spot.\n\n");
-          count --;
-          return count;
-        } else if (origRow == newRow && origCol != newCol) {
-          chess[newRow][newCol] = chess[origRow][origCol];
-          chess[origRow][origCol] = 0;
-          break;
-        } else if (origCol == newCol && origRow != newRow) {
-          chess[newRow][newCol] = chess[origRow][origCol];
-          chess[origRow][origCol] = 0;
-          break;
-        } else if (newCol == origCol + (newRow-origRow) || newCol == origCol - (newRow-origRow)) {
-          chess[newRow][newCol] = chess[origRow][origCol];
-          chess[origRow][origCol] = 0;
-          break;
-        } else {
-          printf("Invalid move try again.\n");
-          count --;
-          return count;
-        }
-
-        /******** PAWN RULECHECK ********/
-      case -6:
-        if (chess[newRow][newCol] < 0) {
-          printf("Your piece occupies that spot.\n\n");
-          count --;
-          return count;
+            } if (chess[newRow][newCol] < 0) {
+            printf("Your piece occupies that spot.\n\n");
+            count --;
+            return count;
         } else if ((newCol == origCol+1 || newCol == origCol-1) && newRow == origRow+1) {
-          chess[newRow][newCol] = chess[origRow][origCol];
-          chess[origRow][origCol] = 0;
-          break;
+            break;
         } else if (origRow+1 == newRow || origRow+2 == newRow) {
           if (chess[origRow+1][origCol] != 0 && newRow == origRow+1) {
             printf("Invalid move, piece 1 away.\n");
@@ -531,20 +422,176 @@ int compute(char *pc, char *mv, int chess[8][8], const char *index[8][8], int co
               count --;
               return count;
           } else {
-          chess[newRow][newCol] = chess[origRow][origCol];
-          chess[origRow][origCol] = 0;
-          break;
+              break;
           }
         }
+          } else {
+            for (int i = 1; i < (newCol - origCol); i++) {    /*** DOWN RIGHT DIAG ***/
+              if (chess[origRow+i][origCol+i] !=0) {
+                printf("A piece blocks your way.\n");
+                count--;
+                return count;
+              }
+            }
+          }
+        }
+        break;
+      } else {
+        printf("Invalid move try again.\n");
+        count --;
+        return count;
+      }
+
+        /******** KING RULECHECK ********/
+      case -4:
+        if (chess[newRow][newCol] > 0) {
+          printf("Your piece occupies that spot.\n\n");
+          count --;
+          return count;
+        } else if (origRow == 0 && newRow > 0) {
+          if (origRow == newRow && (newCol == origCol+1 || newCol == origCol-1)) {
+            break;
+          } else if (origCol == newCol && newRow == origRow+1) {
+              break;
+          } else if ((newCol == origCol + 1 || newCol == origCol -1) && newRow == origRow+1) {
+              break;
+          } else {
+            printf("Invalid move try again.\n");
+            count --;
+            return count;
+          }
+        } else {
+          if (origRow == newRow && (newCol == origCol+1 || newCol == origCol-1)) {
+            break;
+        } else if (origCol == newCol && (newRow == origRow+1 || newRow == origRow-1)) {
+            break;
+        } else if ((newCol == origCol + 1 || newCol == origCol -1) && (newRow == origRow+1 || newRow == origRow-1)) {
+            break;
+        } else {
+          printf("Invalid move try again.\n");
+          count --;
+          return count;
+        }
+      }
+
+        /******** QUEEN RULECHECK ********/
+      case -5:
+        if (chess[newRow][newCol] < 0) {
+          printf("Your piece occupies that spot.\n\n");
+          count --;
+          return count;
+        } else if (origRow == newRow && origCol != newCol) { // lateral mvmt.
+          if (newCol > origCol) {
+            for (int i = origCol+1; i < newCol; i++) { // left -> right
+              if (chess[origRow][i] != 0) { // does a piece block you
+                printf("A piece blocks your way.\n");
+                count--;
+                return count;
+              }
+            }
+          } else {
+            for (int i = origCol-1; i > newCol; i--) { // right -> left
+              if (chess[origRow][i] != 0) { // does a piece block you
+                printf("A piece blocks your way.\n");
+                count--;
+                return count;
+              }
+            }
+            break;
+          }
+        } else if (origCol == newCol && origRow != newRow) { // vertical mvmt.
+          if (newRow > origRow) {
+            for (int i = origRow+1; i < newRow; i++) {  // downwards
+              if (chess[i][origCol] != 0) { // does a piece block you
+                printf("A piece blocks your way.\n");
+                count --;
+                return count;
+              }
+            }
+          } else {
+            for (int i = origRow-1; i > newRow; i--) { // upwards
+              if (chess[i][origCol] != 0) { // does a piece block you
+                printf("A piece blocks your way.\n");
+                count--;
+                return count;
+              }
+            }
+            break;
+          }
+        } else if (newCol == origCol + (newRow-origRow) || newCol == origCol - (newRow-origRow)) {
+          if (origRow > newRow) {
+            if (origCol > newCol) {
+              for (int i = 1; i < (origCol - newCol); i++) {    /*** UP LEFT DIAG ***/
+                if (chess[origRow-i][origCol-i] !=0) {
+                  printf("A piece blocks your way.\n");
+                  count--;
+                  return count;
+                }
+              }
+            } else {
+              for (int i = 1; i < (newCol - origCol); i++) {    /*** UP RIGHT DIAG ***/
+                if (chess[origRow-i][origCol+i] !=0) {
+                  printf("A piece blocks your way.\n");
+                  count--;
+                  return count;
+                }
+              }
+            }
+          } else {
+            if (origCol > newCol) {
+              for (int i = 1; i < (origCol - newCol); i++) {    /*** DOWN LEFT DIAG ***/
+                if (chess[origRow+i][origCol-i] !=0) {
+                  printf("A piece blocks your way.\n");
+                  count--;
+                  return count;
+                }
+              }
+            } else {
+              for (int i = 1; i < (newCol - origCol); i++) {    /*** DOWN RIGHT DIAG ***/
+                if (chess[origRow+i][origCol+i] !=0) {
+                  printf("A piece blocks your way.\n");
+                  count--;
+                  return count;
+                }
+              }
+            }
+          }
+          break;
+        } else {
+          printf("Invalid move try again.\n");
+          count --;
+          return count;
+        }
+
+        /******** PAWN RULECHECK ********/
+      case -6:
+      if (chess[newRow][newCol] > 0) {
+        printf("Your piece occupies that spot.\n\n");
+        count --;
+        return count;
+      } else if ((newCol == origCol+1 || newCol == origCol-1) && newRow == origRow+1 && chess[newRow][newCol] > 0) {
+          break;
+      } else if (origRow == 1 && newCol == origCol && (newRow == origRow+1 || newRow == origRow+2)) {
+          break;
+      } else if (newRow == origRow+1 && newCol == origCol) {
+          break;
+      } else {
+        printf("Invalid move try again.\n");
+        count --;
+        return count;
+      }
+
       default:
         printf("BLACK: make a valid move\n");
         count--;
-        printf("Count after BLACK: %d\n", count);
+        //printf("Count after BLACK: %d\n", count);
         return count;
+      }
     }
+    chess[newRow][newCol] = chess[origRow][origCol];  // update piece
+    chess[origRow][origCol] = 0;      // empty original position
+    return count;
   }
-  return count;
-}
 
 
 
@@ -570,124 +617,85 @@ void printBoard(int chess[8][8]) {
   int i;
      char alpha = 'H';
      int vert = 0;
-     for(brd; brd>0; brd--)
-     {
+     for(brd; brd>0; brd--) {
          a = 8 - brd;
          i = 3;
-         if(i==3)
-         {
+         if(i==3) {
              len = buffer;
              int hor =0;
 
              printf("       |");
-             for(len; len>0; len--)
-             {
-                 if( (hor+vert)%2 == 0 )
-                 {
+             for(len; len>0; len--) {
+                 if( (hor+vert)%2 == 0 ) {
                    printf("       ");
-                 }
-
-                 else if( (hor+vert)%2 != 0 )
-                 {
+                 } else if( (hor+vert)%2 != 0 ) {
                    printf("\u2588\u2588\u2588\u2588\u2588\u2588\u2588");     /* the characters inside the print statement*/
                  }                                          ;                 /* are unicodes used for printing the chess grid*/
                  hor++;
              }
-
              printf("|");
              printf("\n");
              i--;
          }
-       if(i==2)
-        {
+       if(i==2) {
              len = buffer;
              int hor =0;
              printf("     %c |",alpha);
 
-             for(len; len>0; len--)
-             {
+             for(len; len>0; len--) {
                  b = 8 - len;
-                 if( (hor+vert)%2 == 0 )
-                 {
-                     if(chess[a][b] < 0)
-                     //printf("\u2588\u2588\u258C\x1b[37m%d\x1b[0m\u2590\u2588\u2588\n", chess[0][2]);
-                     //printf("\u2588\u2588\u258C\x1b[42m\x1b[30m%d\x1b[0m\u2590\u2588\u2588\n", chess[0][2]);
-                     {
+                 if( (hor+vert)%2 == 0 ) {
+                     if(chess[a][b] < 0) {
                       printf("   \x1b[32m%d\x1b[0m   ", (chess[a][b])*-1);
                      }
-
-                     if(chess[a][b] == 0)
-                     {
+                     if(chess[a][b] == 0) {
                       printf("       ");
                      }
-
-                     if(chess[a][b] > 0)
-                     {
+                     if(chess[a][b] > 0) {
                       printf("   \x1b[37m%d\x1b[0m   ", chess[a][b]);
                      }
-                 }
-
-                 else if( (hor+vert)%2 != 0 )
-                 {
-                     if(chess[a][b] < 0)
-                     {
+                 } else if( (hor+vert)%2 != 0 ) {
+                     if(chess[a][b] < 0) {
                       printf("\u2588\u2588\u258C\x1b[32m%d\x1b[0m\u2590\u2588\u2588", (chess[a][b])*-1);
                      }
-
-                     {
-                       if(chess[a][b] > 0)
+                     if(chess[a][b] > 0) {
                       printf("\u2588\u2588\u258C\x1b[37m%d\x1b[0m\u2590\u2588\u2588", chess[a][b]);
                      }
-
-                     if(chess[a][b] == 0)
-                     {
+                     if(chess[a][b] == 0) {
                       printf("\u2588\u2588\u2588\u2588\u2588\u2588\u2588", chess[a][b]);
                      }
-
                  }
                  hor++;
-
             }
-
              printf("| %c", alpha);
              printf("\n");
              i--;
         }
-
-        if(i==1)
-        {
+        if(i==1) {
              len = buffer;
              printf("       |");
              int hor =0;
 
-              for(len; len>0; len--)
-              {
-                 if( (hor+vert)%2 == 0 )
-                 {
+              for(len; len>0; len--) {
+                 if( (hor+vert)%2 == 0 ) {
                    printf("       ");
-                 }
-
-                 else if( (hor+vert)%2 != 0 )
-                 {
+                 } else if( (hor+vert)%2 != 0 ) {
                    printf("\u2588\u2588\u2588\u2588\u2588\u2588\u2588");
                  }
                  hor++;
-
               }
-
             printf("|");
             printf("\n");
             i--;
         }
-
          alpha--;
          vert++;
     }
-
+    
     len = buffer;
     printf("       --");
 
-     for(len; len>0; len--){
+     for(len; len>0; len--) {
       printf("-------");
      }
             printf("\n");

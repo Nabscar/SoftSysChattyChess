@@ -8,7 +8,7 @@
 #### Goal
 For our Project we wished to make chess rooms for people to log on and play. However with the twist that people would be able to join over the Olin network in their linux terminal and choose a room that they can then play either another person or a computer. For a lower bound we’d hope to at least have the rooms setup for anyone to join into and play against someone in a chess game. For stretch we would enjoy being able to implement these functions as well as add the possibility of implementing an AI, which would be the only major part we don’t write directly, but do write the implementation to get the moves and represent them against the opponent. As well as allow for spectating and chat functions for all attending parties.
 
-At the end, we were able to implement a server that accepts two clients and runs the whole logic and rule-checking behind the chess game, and then the clients are able to send the moves they want to do and have the board change in respect to those. Even though we weren't able to implement our stretch goals, we created a very fun, and usable, chess game to play with friends on our same network, which makes us very happy.
+At the end, we were able to implement a server that accepts two clients and runs the whole logic and rule-checking behind the chess game. The clients are then able to send their moves and have the board update for the other play in response to a valid move. Even though we weren't able to implement our stretch goals, we created a very fun, and usable, chess game to play with friends on our same network, which makes us very happy.
 
 [//]: <> (What are your learning goals; that is, what do you intend to achieve by working on this project?)
 #### Learning Goals
@@ -26,10 +26,12 @@ Resources on networking using sockets:
 Basically, for the networking with sockets, GeeksandGeeks was extremely useful.
 
 Resources for chess implementation:
-OSCAAAAARRRRR
+- For the Board implementation, some inspiration was taken from [this ASCII implementation of a Chess Game](https://github.com/Parigyan/ASCII-Chess).
+- To do move checking and the actual updating and movement of the pieces, Oscar did this implementation himself.
 
 [//]: <> (What were you able to get done?  Include in the report whatever evidence is appropriate to demonstrate the outcome of the project.  Consider including snippets of code with explanation. do not paste in large chunks of unexplained code.  Consider including links to relevant files.  And do include output from the program you wrote.)
 #### What we got Done
+For our project we were able to achieve a working local server that could accept two separate clients two communicate through string input. This was then  
 
 
 [//]: <> (Explain at least one design decision you made.  Were there several ways to do something?  Which did you choose and why?)
