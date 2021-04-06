@@ -31,7 +31,8 @@ Resources for chess implementation:
 
 [//]: <> (What were you able to get done?  Include in the report whatever evidence is appropriate to demonstrate the outcome of the project.  Consider including snippets of code with explanation. do not paste in large chunks of unexplained code.  Consider including links to relevant files.  And do include output from the program you wrote.)
 #### What we got Done
-For our project we were able to achieve a working local server that could accept two separate clients two communicate through string input. This was then  
+For our project we were able to achieve a working local server that could accept two separate clients two communicate through string input. This was done through "SECTION ABOUT HOW SERVER STUFF WORKS"
+  When it comes to the Chess part of this assignment. We were able to accomplish what we felt like is a functional Chess Game. Currently however the checking for checkmate is not finished, but all the pieces move in accordance to the rules by which they should. 
 
 
 [//]: <> (Explain at least one design decision you made.  Were there several ways to do something?  Which did you choose and why?)
