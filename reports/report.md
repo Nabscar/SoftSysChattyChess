@@ -4,6 +4,8 @@
 
 [//]: <> (Reflect on the outcome of the project in terms of your learning goals.  Between the lower and upper bounds you identified in the proposal, where did your project end up?  Did you achieve your learning goals?)
 
+![Image of game](/imgs/players.png)
+
 [//]: <> (What is the goal of your project; for example, what do you plan to make, and what should it do?)
 #### Goal
 For our Project we wished to make chess rooms for people to log on and play. However with the twist that people would be able to join over the Olin network in their linux terminal and choose a room that they can then play either another person or a computer. For a lower bound we’d hope to at least have the rooms setup for anyone to join into and play against someone in a chess game. For stretch we would enjoy being able to implement these functions as well as add the possibility of implementing an AI, which would be the only major part we don’t write directly, but do write the implementation to get the moves and represent them against the opponent. As well as allow for spectating and chat functions for all attending parties.
@@ -27,12 +29,12 @@ Basically, for the networking with sockets, GeeksandGeeks was extremely useful.
 
 Resources for chess implementation:
 - For the Board implementation, some inspiration was taken from [this ASCII implementation of a Chess Game](https://github.com/Parigyan/ASCII-Chess).
-- To do move checking and the actual updating and movement of the pieces, Oscar did this implementation himself.
+- To do move checking and the actual updating and movement of the pieces, we did this implementation ourselves.
 
 [//]: <> (What were you able to get done?  Include in the report whatever evidence is appropriate to demonstrate the outcome of the project.  Consider including snippets of code with explanation. do not paste in large chunks of unexplained code.  Consider including links to relevant files.  And do include output from the program you wrote.)
 #### What we got Done
-For our project we were able to achieve a working local server that could accept two separate clients two communicate through string input. This was done through "SECTION ABOUT HOW SERVER STUFF WORKS"
-  When it comes to the Chess part of this assignment. We were able to accomplish what we felt like is a functional Chess Game. Currently however the checking for checkmate is not finished, but all the pieces move in accordance to the rules by which they should. 
+For our project we were able to achieve a working local server that could accept two separate clients two communicate through string input. This was done using sockets that connect to the server terminal's IP address. Besides this, we also have threads running on the clients, which are used to receive messages at all times. This communication lets a user send a string to the server, who processes it and sends (in our case both users so they can both see the most up-to-date board) the client the processed string.
+  When it comes to the Chess part of this assignment. We were able to accomplish what we felt like is a functional Chess Game. Currently however the checking for checkmate is not finished, but all the pieces move in accordance to the rules by which they should.
 
 
 [//]: <> (Explain at least one design decision you made.  Were there several ways to do something?  Which did you choose and why?)
