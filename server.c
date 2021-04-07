@@ -17,6 +17,32 @@ int main(){
 
   //set of socket descriptors
   fd_set readfds;
+  // Setting up specific game variables
+  int chess[8][8] = {
+    {-1,-2,-3,-4,-5,-3,-2,-1},
+    {-6,-6,-6,-6,-6,-6,-6,-6},
+    { 0, 0, 0, 0, 0, 0, 0, 0},
+    { 0, 0, 0, 0, 0, 0, 0, 0},
+    { 0, 0, 0, 0, 0, 0, 0, 0},
+    { 0, 0, 0, 0, 0, 0, 0, 0},
+    { 6, 6, 6, 6, 6, 6, 6, 6},
+    { 1, 2, 3, 5, 4, 3, 2, 1}
+  };
+
+  const char *ind[8][8] = {
+    {"h1","h2","h3","h4","h5","h6","h7","h8"},
+    {"g1","g2","g3","g4","g5","g6","g7","g8"},
+    {"f1","f2","f3","f4","f5","f6","f7","f8"},
+    {"e1","e2","e3","e4","e5","e6","e7","e8"},
+    {"d1","d2","d3","d4","d5","d6","d7","d8"},
+    {"c1","c2","c3","c4","c5","c6","c7","c8"},
+    {"b1","b2","b3","b4","b5","b6","b7","b8"},
+    {"a1","a2","a3","a4","a5","a6","a7","a8"},
+  };
+
+  char pc[3], mv[3];
+  int run = 1;
+  int currentPlayer = 1;
 
   playerSockets[0] = 0;
   playerSockets[1] = 0;
@@ -115,46 +141,27 @@ int main(){
   // infinite game loop
   puts("Players connected! Lets Play!");
 
-  // Setting up specific game variables
-  int chess[8][8] = {
-    {-1,-2,-3,-4,-5,-3,-2,-1},
-    {-6,-6,-6,-6,-6,-6,-6,-6},
-    { 0, 0, 0, 0, 0, 0, 0, 0},
-    { 0, 0, 0, 0, 0, 0, 0, 0},
-    { 0, 0, 0, 0, 0, 0, 0, 0},
-    { 0, 0, 0, 0, 0, 0, 0, 0},
-    { 6, 6, 6, 6, 6, 6, 6, 6},
-    { 1, 2, 3, 5, 4, 3, 2, 1}
-  };
 
-  const char *ind[8][8] = {
-    {"h1","h2","h3","h4","h5","h6","h7","h8"},
-    {"g1","g2","g3","g4","g5","g6","g7","g8"},
-    {"f1","f2","f3","f4","f5","f6","f7","f8"},
-    {"e1","e2","e3","e4","e5","e6","e7","e8"},
-    {"d1","d2","d3","d4","d5","d6","d7","d8"},
-    {"c1","c2","c3","c4","c5","c6","c7","c8"},
-    {"b1","b2","b3","b4","b5","b6","b7","b8"},
-    {"a1","a2","a3","a4","a5","a6","a7","a8"},
-  };
-
-  char pc[3], mv[3];
-  int run = 1;
-  int currentPlayer = 1;
   while (run > 0){
-    printBoard(chess);
+    // Uncomment following line if server wants to see game
+    // printBoard(chess);
+    // memeset moves and messages to blank
     memset(pc, '0', sizeof(pc));
     memset(mv, '0', sizeof(mv));
     memset(buff, '0', sizeof(buff));
+    // set socket to current player
     socketDesc = playerSockets[(currentPlayer+1)%2];
 
+    // create string representing board
     for(int i = 0; i < 8; i++){
       for(int j = 0; j < 8; j++){
         buff[i*8 + j] = itoc(chess[i][j] + 6);
       }
     }
 
+    // send board to player
     send(socketDesc, buff, strlen(buff), 0);
+    // read message from player
     if ((valread = read(socketDesc , buff, MAX))!= NULL){
       printf("Playing: %s\n", usernames[(currentPlayer+1)%2]);
       //Check if it was for closing , and also read the
@@ -168,13 +175,16 @@ int main(){
 
         char* message_quit = "User Disconnected. You Win!\n";
 
+        // send quit message to other player
         socketDesc = playerSockets[(currentPlayer)%2];
         send(socketDesc,message_quit,strlen(message_quit),0);
         exit(0);
       }
+      // if it wasnt quit msg then it was move
       else{
-        printf("%s\n", buff);
+        // uncomment toprint move done by user
         buff[valread] = '\0';
+        // separate incoming string into the two parts of the move
         for(int i = 0; i < 2; i++) {
           pc[i] = buff[i];
         }
@@ -183,17 +193,20 @@ int main(){
           mv[i-2] = buff[i];
         }
         mv[2] = '\0';
-        printf("AAAAA Move: %s     %s", pc, mv);
+        // Print move for server
+        printf("Move: %s     %s\n", pc, mv);
+        // compute move and send board to player who plays nect
         currentPlayer = compute(pc, mv, chess, ind, currentPlayer);
         currentPlayer++;
         socketDesc = playerSockets[(currentPlayer)%2];
 
+        // create string representing board
         for(int i = 0; i < 8; i++){
       		for(int j = 0; j < 8; j++){
       			buff[i*8 + j] = itoc(chess[i][j] + 6);
       		}
       	}
-
+        // send board string to player
         send(socketDesc, buff, strlen(buff), 0);
       }
     }
