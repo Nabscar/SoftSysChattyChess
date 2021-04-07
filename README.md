@@ -19,8 +19,8 @@ To run this client file and connect to the server
 Below is an image of a client playing:
 ![Image of Players](/imgs/players.png)
 
-And this other image if what the server will print in this same game 
-(there is a commented line in code for if the server wants to also see the board move)
+And this other image if what the server will print when two people (Nabih & Oscar) are playing
+(there is a commented line in code for if the server wants to also see the board being printed as moves occur)
 ![Image of Server](/imgs/server.png)
  
 ## Acknowledgements
