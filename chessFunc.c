@@ -6,6 +6,10 @@ Created by Oscar De La Garza & Nabih Estefan
 int compute(char *pc, char *mv, int chess[8][8], const char *index[8][8], int count) {
   int origRow, newRow;    // row variables
   int origCol, newCol;    // column variables
+  int wKingRow, wKingCol;
+  int bKingRow, bKingCol;
+  int inCheckW = 0;
+  int inCheckB = 0;
 
   for(int i = 0; i < 8; i++) {      // find index of piece to be moved
     for(int j = 0; j < 8; j++) {
@@ -20,6 +24,14 @@ int compute(char *pc, char *mv, int chess[8][8], const char *index[8][8], int co
         newCol = j;
         //printf("new spot, %d %d\n", (i), (j));
         //printf("index is: %d\n", chess[newRow][newCol]);
+      }
+      if (chess[i][j] == 4) { // check for white kings location
+        wKingRow = i;
+        wKingCol = j;
+      }
+      if (chess[i][j] == 4) { // check for black kings location
+        bKingRow = i;
+        bKingCol = j;
       }
     }
   }
@@ -290,6 +302,36 @@ int compute(char *pc, char *mv, int chess[8][8], const char *index[8][8], int co
       // printf("Count after WHITE: %d\n", count);
       return count;
     }
+/*    inCheckW = 0;           // right of the King
+    for(int i = wKingRow+1; i < 7; i++) {
+      if (chess[i][wKingCol] < 0) {
+        for(int j = wKingRow; j < i; j++) {
+          if (chess[j][wKingCol] != 0) {
+            inCheckW++;
+            break;
+          }
+        }
+      }
+    } if (inCheckW == 0) {
+      printf("WHITE: make a valid move, you are in check\n");  // No valid move detected
+      count--;
+      return count;
+    }
+    inCheckW = 0;           // left of king
+    for(int i = wKingRow-1; i > 0; i--) {
+      if (chess[i][wKingCol] < 0) {
+        for(int j = wKingRow; j > i; j--) {
+          if (chess[j][wKingCol] != 0) {
+            inCheckW++;
+            break;
+          }
+        }
+      }
+    } if (inCheckW == 0) {
+      printf("WHITE: make a valid move, you are in check\n");  // No valid move detected
+      count--;
+      return count;
+*/
     chess[newRow][newCol] = chess[origRow][origCol];  // update piece
     chess[origRow][origCol] = 0;      // empty original position
     return count;
