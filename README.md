@@ -16,7 +16,7 @@ To run this client file and connect to the server
 `./cleint [ip-address-of-server-computer]`
 
 ## Images
-Below is an image of two clients side-by-side playing:
+Below is an image of a client playing:
 ![Image of Players](/imgs/players.png)
 
 And this other image if what the server will print in this same game 
