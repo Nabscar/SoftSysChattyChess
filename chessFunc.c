@@ -402,29 +402,7 @@ int compute(char *pc, char *mv, int chess[8][8], const char *index[8][8], int co
                 count--;
                 return count;
               }
-            } if (chess[newRow][newCol] < 0) {
-            printf("Your piece occupies that spot.\n\n");
-            count --;
-            return count;
-        } else if ((newCol == origCol+1 || newCol == origCol-1) && newRow == origRow+1) {
-            break;
-        } else if (origRow+1 == newRow || origRow+2 == newRow) {
-          if (chess[origRow+1][origCol] != 0 && newRow == origRow+1) {
-            printf("Invalid move, piece 1 away.\n");
-            count --;
-            return count;
-          } else if (chess[origRow+2][origCol] != 0 && newRow == origRow+2) {
-            printf("Invalid move, piece 2 away.\n");
-            count --;
-            return count;
-          } else if (origCol != newCol) {
-              printf("Invalid move try again.\n");
-              count --;
-              return count;
-          } else {
-              break;
-          }
-        }
+            }
           } else {
             for (int i = 1; i < (newCol - origCol); i++) {    /*** DOWN RIGHT DIAG ***/
               if (chess[origRow+i][origCol+i] !=0) {
@@ -593,7 +571,26 @@ int compute(char *pc, char *mv, int chess[8][8], const char *index[8][8], int co
     return count;
   }
 
-
+int gameover(int chess[8][8]) {
+  int whiteCheck = 0;
+  int blackCheck = 0;
+  printf("gameover check\n");
+  for(int i = 0; i < 8; i++) {      // find index of piece to be moved
+    for(int j = 0; j < 8; j++) {
+      if (chess[i][j] == 4) {  // check for piece(origianl location)
+        whiteCheck++;
+      } else if (chess[i][j] == -4) {
+        blackCheck++;
+      }
+    }
+  }
+  if (whiteCheck == 0) {
+    return 0;
+  } else if (blackCheck == 0) {
+    return 1;
+  }
+  return 2;
+}
 
 void printBoard(int chess[8][8]) {
   int a,b;
@@ -691,7 +688,7 @@ void printBoard(int chess[8][8]) {
          alpha--;
          vert++;
     }
-    
+
     len = buffer;
     printf("       --");
 

@@ -9,4 +9,5 @@ Created by Oscar De La Garza & Nabih Estefan
 #include <unistd.h>
 
 int compute(char *pc, char *mv, int chess[8][8], const char *index[8][8], int count);
+int gameover(int chess[8][8]);
 void printBoard(int chess[8][8]);

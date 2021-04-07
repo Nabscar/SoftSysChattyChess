@@ -31,9 +31,10 @@ int main() {
   char piece[4], move[4];
   char pc[3], mv[3];
   int checker = 1;
-  int run = 108;
+  int game;
+  int run = 1;
 
-  while(run > 0) {
+  while (run == 1) {
     printBoard(chess);
 
     printf("Input piece you would like to move: ");
@@ -54,8 +55,17 @@ int main() {
     }
   */
     checker = compute(pc, mv, chess, ind, checker);
+    game = gameover(chess);
+    if (game == 0 || game == 1) {
+      break;
+    }
     checker++;
-    printf("Current Count is: %d\n", checker);
+    printf("Current Turn: %d\n", checker);
+  }
+  if (checker%2 != 0) {
+    printf("Congrats, white has won!\n");
+  } else if (checker%2 == 0) {
+    printf("Congrats, black has won!\n");
   }
   return 0;
 }
